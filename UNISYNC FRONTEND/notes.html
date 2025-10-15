@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>UniSync — Notes Sharing</title>
+<style>
+:root{
+  --bg:#f7fafc;
+  --card:#ffffff;
+  --muted:#6b7280;
+  --accent1:#4f46e5;
+  --accent2:#06b6d4;
+  --glass: rgba(255,255,255,0.75);
+  --radius:18px;
+  --shadow: 0 6px 20px rgba(16,24,40,0.08);
+  --glass-2: rgba(255,255,255,0.85);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;background:linear-gradient(135deg,#eef2ff 0%, #fdf2f8 100%);color:#0f172a;}
+.header{
+  background:#fff;border-bottom:1px solid rgba(15,23,42,0.04);position:sticky;top:0;z-index:60;
+  box-shadow: 0 1px 0 rgba(15,23,42,0.02);
+}
+.container{max-width:1100px;margin:0 auto;padding:20px;}
+.header-inner{display:flex;align-items:center;justify-content:space-between;height:64px;}
+.brand{display:flex;align-items:center;gap:12px;cursor:pointer;text-decoration:none;color:inherit;}
+.logo{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;
+  background:linear-gradient(90deg,#2563eb,#7c3aed);
+}
+.brand-title{font-size:20px;font-weight:800;background:linear-gradient(90deg,#2563eb,#7c3aed);-webkit-background-clip:text;background-clip:text;color:transparent}
+.search{flex:0 0 420px;}
+.search input{width:100%;padding:10px 14px;border-radius:999px;border:1px solid rgba(15,23,42,0.08);outline:none}
+.header-right{display:flex;align-items:center;gap:14px}
+.avatar{width:36px;height:36px;border-radius:999px;background:#f1f5f9;display:flex;align-items:center;justify-content:center}
+
+.layout{display:grid;grid-template-columns:260px 1fr;gap:24px;max-width:1100px;margin:18px auto;padding:0 20px 80px}
+.sidebar{background:var(--card);border-radius:16px;padding:16px;box-shadow:var(--shadow);position:sticky;top:88px;height:fit-content}
+.nav-button{display:flex;align-items:center;gap:10px;padding:10px;border-radius:10px;border:none;background:transparent;width:100%;text-align:left;cursor:pointer;font-weight:600;color:#0f172a}
+.nav-button:hover{background:linear-gradient(90deg,#f8fafc,#f6f5ff)}
+.nav-button.active{background:linear-gradient(90deg,rgba(79,70,229,0.08),rgba(124,58,237,0.06));}
+.quick-actions{display:flex;gap:8px;margin-top:12px}
+.btn{padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600}
+.btn.primary{background:linear-gradient(90deg,#2563eb,#7c3aed);color:#fff}
+.btn.ghost{border:1px solid rgba(15,23,42,0.06);background:transparent}
+
+.content{min-height:60vh}
+.card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow);}
+
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+
+.small{font-size:13px;color:var(--muted)}
+.note-item{display:flex;justify-content:space-between;align-items:center;padding:12px;border-radius:12px;border:1px solid rgba(15,23,42,0.03)}
+.note-meta{font-size:13px;color:var(--muted)}
+.footer-note{text-align:center;color:var(--muted);margin-top:18px;font-size:13px}
+
+.topbar-actions{display:flex;gap:8px;align-items:center}
+
+/* responsive */
+@media (max-width:900px){
+  .layout{grid-template-columns:1fr; padding:0 12px;}
+  .search{display:none}
+  .grid-3{grid-template-columns:1fr}
+  .grid-2{grid-template-columns:1fr}
+  .sidebar{position:relative;top:auto}
+}
+</style>
+</head>
+<body>
+  <!-- Header (reused style/logo) -->
+  <header class="header" role="banner">
+    <div class="container header-inner">
+      <a class="brand" href="unisync-complete.html">
+        <div class="logo">U</div>
+        <div class="brand-title">UniSync</div>
+      </a>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div class="search"><input placeholder="Search notes by course or title..." /></div>
+        <div class="header-right">
+          <div title="Notifications" style="font-size:20px">🔔</div>
+          <div class="avatar">👤</div>
+          <div style="font-size:14px;color:var(--muted)">Piyush</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main layout -->
+  <div class="layout" role="main">
+    <!-- Sidebar -->
+    <aside class="sidebar" aria-label="Main navigation">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:10px">Explore</div>
+      <nav>
+        <a class="nav-button" href="unisync-complete.html">🏠 Home</a>
+        <a class="nav-button active" href="notes.html">📝 Notes Sharing</a>
+        <a class="nav-button" href="marketplace.html">🛒 Marketplace</a>
+        <a class="nav-button" href="events.html">📅 Events</a>
+        <a class="nav-button" href="groups.html">👥 Study Groups</a>
+        <a class="nav-button" href="forum.html">💬 Q&amp;A Forum</a>
+        <a class="nav-button" href="messages.html">💌 Messages</a>
+        <a class="nav-button" href="dashboard.html">📊 Dashboard</a>
+      </nav>
+
+      <div style="margin-top:14px;border-top:1px solid rgba(15,23,42,0.04);padding-top:12px">
+        <div style="font-size:11px;color:var(--muted)">Quick actions</div>
+        <div class="quick-actions">
+          <button class="btn primary" onclick="window.location='notes.html#upload'">Create</button>
+          <button class="btn ghost" onclick="alert('Invite link copied!')">Invite</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Content area -->
+    <section class="content">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+        <div>
+          <h2 style="margin:0;font-size:24px">Notes Sharing</h2>
+          <div class="small">Upload, download, and rate notes shared by classmates.</div>
+        </div>
+        <div class="topbar-actions">
+          <button class="btn primary" onclick="document.getElementById('upload').scrollIntoView()">Upload Notes</button>
+          <a class="btn ghost" href="unisync-complete.html" title="Back to Home">Back to Home</a>
+        </div>
+      </div>
+
+      <div class="grid-3" style="margin-bottom:16px">
+        <div class="card">
+          <div style="font-size:18px">📝 Latest Notes</div>
+          <ul style="list-style:none;padding:0;margin-top:12px">
+            <li class="note-item" style="margin-bottom:8px">
+              <div>
+                <div style="font-weight:700">Data Structures - Lecture 5</div>
+                <div class="note-meta">DSA • by Priya</div>
+              </div>
+              <div style="text-align:right">
+                <div class="small">2.3MB</div>
+                <div style="margin-top:8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></div>
+              </div>
+            </li>
+
+            <li class="note-item" style="margin-bottom:8px">
+              <div>
+                <div style="font-weight:700">Operating Systems - Midsem Notes</div>
+                <div class="note-meta">OS • by Rahul</div>
+              </div>
+              <div style="text-align:right">
+                <div class="small">1.1MB</div>
+                <div style="margin-top:8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></div>
+              </div>
+            </li>
+
+            <li class="note-item">
+              <div>
+                <div style="font-weight:700">Computer Networks Cheatsheet</div>
+                <div class="note-meta">CN • by Sneha</div>
+              </div>
+              <div style="text-align:right">
+                <div class="small">400KB</div>
+                <div style="margin-top:8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></div>
+              </div>
+            </li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <div style="font-size:18px">📚 Popular Courses</div>
+          <div style="margin-top:12px" class="small">
+            <div style="margin-bottom:8px"><strong>DSA</strong> — 12 notes</div>
+            <div style="margin-bottom:8px"><strong>OS</strong> — 9 notes</div>
+            <div style="margin-bottom:8px"><strong>CN</strong> — 5 notes</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:18px">⭐ Top Contributors</div>
+          <div style="margin-top:12px" class="small">
+            <div style="margin-bottom:8px"><strong>Priya</strong> — 8 uploads</div>
+            <div style="margin-bottom:8px"><strong>Rahul</strong> — 5 uploads</div>
+            <div style="margin-bottom:8px"><strong>Sneha</strong> — 4 uploads</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card" id="upload" style="margin-bottom:14px">
+        <h3 style="margin:0 0 8px 0">Upload Notes</h3>
+        <div class="small" style="margin-bottom:8px">Choose a file and add details for sharing.</div>
+        <form onsubmit="event.preventDefault(); alert('Upload simulated — replace with real API');">
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <input required placeholder="Title" style="flex:1;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+            <input required placeholder="Course (e.g., DSA)" style="width:200px;padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
+            <input type="file" style="padding:6px" />
+            <button class="btn primary" type="submit">Upload</button>
+          </div>
+        </form>
+      </div>
+
+      <div class="card">
+        <h3 style="margin:0 0 8px 0">All Notes</h3>
+        <div class="small" style="margin-bottom:10px">Browse and filter notes.</div>
+        <div style="overflow:auto">
+          <table style="width:100%;border-collapse:collapse">
+            <thead style="text-align:left;font-size:13px;color:var(--muted)">
+              <tr><th style="padding:10px 8px">Title</th><th style="padding:10px 8px">Course</th><th style="padding:10px 8px">Uploaded By</th><th style="padding:10px 8px">Size</th><th style="padding:10px 8px">Action</th></tr>
+            </thead>
+            <tbody>
+              <tr><td style="padding:10px 8px">Data Structures - Lecture 5</td><td style="padding:10px 8px">DSA</td><td style="padding:10px 8px">Priya</td><td style="padding:10px 8px">2.3MB</td><td style="padding:10px 8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></td></tr>
+              <tr style="background:linear-gradient(90deg,rgba(79,70,229,0.02),transparent)"><td style="padding:10px 8px">Operating Systems - Midsem Notes</td><td style="padding:10px 8px">OS</td><td style="padding:10px 8px">Rahul</td><td style="padding:10px 8px">1.1MB</td><td style="padding:10px 8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></td></tr>
+              <tr><td style="padding:10px 8px">Computer Networks Cheatsheet</td><td style="padding:10px 8px">CN</td><td style="padding:10px 8px">Sneha</td><td style="padding:10px 8px">400KB</td><td style="padding:10px 8px"><button class="btn">Preview</button> <button class="btn primary">Download</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="footer-note">Designed to match the UniSync homepage — consistent header, sidebar, and visual theme.</div>
+    </section>
+  </div>
+
+</body>
+</html>
