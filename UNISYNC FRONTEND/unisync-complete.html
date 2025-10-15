@@ -10,194 +10,134 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background-color: #f8f9fa; /* Light, professional background */
         }
-        @keyframes float {
-            0%, 100% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-20px) rotate(180deg); }
+        /* Custom Gradients - Retain the core colors but applied subtly */
+        .card-gradient-blue { background: linear-gradient(145deg, #3B82F6 0%, #06B6D4 100%); }
+        .card-gradient-green { background: linear-gradient(145deg, #10B981 0%, #34D399 100%); }
+        .card-gradient-purple { background: linear-gradient(145deg, #8B5CF6 0%, #EC4899 100%); }
+        .card-gradient-indigo { background: linear-gradient(145deg, #6366F1 0%, #3B82F6 100%); }
+        .card-gradient-orange { background: linear-gradient(145deg, #F59E0B 0%, #FDE047 100%); }
+        .card-gradient-rose { background: linear-gradient(145deg, #F43F5E 0%, #EC4899 100%); }
+        .card-gradient-violet { background: linear-gradient(145deg, #8B5CF6 0%, #A855F7 100%); }
+
+        /* Card Hover Effect */
+        .feature-card {
+            transition: all 0.3s ease-in-out;
+            transform: translateY(0);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
         }
-        .animate-float {
-            animation: float 4s linear infinite;
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.05), 0 0 40px rgba(139, 92, 246, 0.2); /* Subtle glow on hover */
         }
-        @keyframes bubble-hover {
-            0% { transform: scale(1); }
-            100% { transform: scale(1.1); }
-        }
-        .bubble:hover {
-            animation: bubble-hover 0.3s ease-in-out forwards;
-        }
-        .gradient-blue { background: linear-gradient(135deg, #3B82F6, #06B6D4); }
-        .gradient-green { background: linear-gradient(135deg, #10B981, #34D399); }
-        .gradient-purple { background: linear-gradient(135deg, #8B5CF6, #EC4899); }
-        .gradient-indigo { background: linear-gradient(135deg, #6366F1, #3B82F6); }
-        .gradient-orange { background: linear-gradient(135deg, #F59E0B, #FDE047); }
-        .gradient-rose { background: linear-gradient(135deg, #F43F5E, #EC4899); }
-        .gradient-violet { background: linear-gradient(135deg, #8B5CF6, #A855F7); }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState } = React;
+    const { useState } = React;
 
-        // Simple icons as text/emojis for reliability
-        const icons = {
-            notes: '📝',
-            marketplace: '🛒', 
-            events: '📅',
-            groups: '👥',
-            forum: '💬',
-            chat: '💌',
-            dashboard: '📊',
-            menu: '☰',
-            close: '✕',
-            search: '🔍',
-            bell: '🔔',
-            user: '👤'
+    const FeatureCard = ({ id, label, icon, gradient, url, onClick }) => (
+        <a 
+            href={url}
+            className={`feature-card block p-6 rounded-2xl text-white cursor-pointer transition-transform duration-300 hover:scale-[1.02] ${gradient}`}
+            onClick={(e) => {
+                e.preventDefault();
+                onClick(id, url);
+            }}
+        >
+            <div className="flex items-center space-x-4">
+                <div className="text-4xl p-3 bg-white/20 backdrop-blur-sm rounded-lg">
+                    {icon}
+                </div>
+                <h2 className="text-xl font-semibold tracking-wide">{label}</h2>
+            </div>
+        </a>
+    );
+
+    const UniSync = () => {
+        const [clickedId, setClickedId] = useState(null);
+
+        const features = [
+            { id: 'notes', label: 'Notes Sharing', icon: '📝', gradient: 'card-gradient-blue', url: 'notes.html' },
+            { id: 'groups', label: 'Study Groups', icon: '👥', gradient: 'card-gradient-indigo', url: 'groups.html' },
+            { id: 'events', label: 'University Events', icon: '📅', gradient: 'card-gradient-purple', url: 'events.html' },
+            { id: 'messages', label: 'Messages / Chat', icon: '💌', gradient: 'card-gradient-rose', url: 'messages.html' },
+            { id: 'marketplace', label: 'Marketplace', icon: '🛒', gradient: 'card-gradient-green', url: 'marketplace.html' },
+            { id: 'forum', label: 'Q&A Forum', icon: '💬', gradient: 'card-gradient-orange', url: 'forum.html' },
+            { id: 'dashboard', label: 'Personal Dashboard', icon: '📊', gradient: 'card-gradient-violet', url: 'dashboard.html' }
+        ];
+
+        const handleCardClick = (id, url) => {
+            setClickedId(id);
+            // Simulate a brief animation before redirecting
+            setTimeout(() => {
+                window.location.href = url;
+            }, 300); 
         };
 
-        const UniSync = () => {
-            const [currentView, setCurrentView] = useState('home');
-            const [isMenuOpen, setIsMenuOpen] = useState(false);
-            const [clickedBubble, setClickedBubble] = useState(null);
-
-            const bubbles = [
-                { id: 'notes', label: 'Notes Sharing', icon: '📝', gradient: 'gradient-blue', position: 'top-20 left-20' },
-                { id: 'marketplace', label: 'Marketplace', icon: '🛒', gradient: 'gradient-green', position: 'top-32 right-32' },
-                { id: 'events', label: 'Events', icon: '📅', gradient: 'gradient-purple', position: 'top-52 left-1/2 transform -translate-x-1/2' },
-                { id: 'groups', label: 'Study Groups', icon: '👥', gradient: 'gradient-indigo', position: 'bottom-40 left-24' },
-                { id: 'forum', label: 'Q&A Forum', icon: '💬', gradient: 'gradient-orange', position: 'bottom-32 right-28' },
-                { id: 'chat', label: 'Messages', icon: '💌', gradient: 'gradient-rose', position: 'top-72 right-20' },
-                { id: 'dashboard', label: 'Dashboard', icon: '📊', gradient: 'gradient-violet', position: 'bottom-20 left-1/2 transform -translate-x-1/2' }
-            ];
-
-            const handleBubbleClick = (bubbleId) => {
-                setClickedBubble(bubbleId);
-                setTimeout(() => {
-                    setCurrentView(bubbleId);
-                    setClickedBubble(null);
-                }, 600);
-            };
-
-            const renderHomepage = () => (
-                <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
-                    {/* Welcome Header */}
-                    <div className="text-center py-12 relative z-10">
-                        <h1 className="text-6xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
-                            Welcome to UniSync
-                        </h1>
-                        <p className="text-2xl text-gray-600 mb-8">Your synchronized university experience awaits</p>
-                        <div className="text-xl text-gray-500">Hello, Alex! Choose your adventure:</div>
-                    </div>
-
-                    {/* Floating Bubbles */}
-                    <div className="absolute inset-0 overflow-hidden">
-                        {bubbles.map(bubble => (
-                            <div
-                                key={bubble.id}
-                                className={`absolute ${bubble.position} w-32 h-32 ${bubble.gradient} rounded-full shadow-2xl 
-                                    flex flex-col items-center justify-center text-white cursor-pointer
-                                    transition-all duration-500 ease-in-out bubble
-                                    ${clickedBubble === bubble.id ? 'animate-bounce' : ''}
-                                    hover:shadow-3xl border-2 border-white/30`}
-                                onClick={() => handleBubbleClick(bubble.id)}
-                                style={{
-                                    zIndex: clickedBubble === bubble.id ? 50 : 10
-                                }}
+        return (
+            <div className="min-h-screen">
+                {/* Header - Professional and Sleek */}
+                <header className="bg-white shadow-md sticky top-0 z-50">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex justify-between items-center h-20">
+                            <a 
+                                href="#"
+                                className="flex items-center gap-3"
                             >
-                                <div className="text-4xl mb-2">{bubble.icon}</div>
-                                <span className="text-sm font-bold text-center px-2 leading-tight">
-                                    {bubble.label}
-                                </span>
+                                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg flex items-center justify-center text-white font-black text-2xl shadow-lg">
+                                    U
+                                </div>
+                                <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                                    UniSync
+                                </h1>
+                            </a>
+                            <div className="flex items-center space-x-4">
+                                <button className="text-gray-500 hover:text-purple-600 transition duration-150 p-2 rounded-full hover:bg-gray-100" aria-label="Notifications">
+                                    <span className="text-2xl">🔔</span>
+                                </button>
+                                <button className="w-10 h-10 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center hover:bg-gray-300 transition duration-150" aria-label="User Profile">
+                                    A
+                                </button>
                             </div>
-                        ))}
+                        </div>
+                    </div>
+                </header>
+
+                {/* Main Content Area */}
+                <main className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                    {/* Welcome Section */}
+                    <div className="text-center mb-16">
+                        <h1 className="text-5xl font-extrabold text-gray-800 mb-3">
+                            Your Synchronized University Experience
+                        </h1>
+                        <p className="text-xl text-gray-500 mb-6">
+                            Hello, Alex! Choose your adventure and connect with your college community.
+                        </p>
                     </div>
 
-                    {/* Background particles */}
-                    <div className="absolute inset-0 pointer-events-none">
-                        {[...Array(15)].map((_, i) => (
-                            <div
-                                key={i}
-                                className="absolute w-3 h-3 bg-blue-400 rounded-full opacity-30 animate-float"
-                                style={{
-                                    left: `${Math.random() * 100}%`,
-                                    top: `${Math.random() * 100}%`,
-                                    animationDelay: `${Math.random() * 4}s`
-                                }}
+                    {/* Features Grid */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {features.map(feature => (
+                            <FeatureCard 
+                                key={feature.id}
+                                {...feature}
+                                onClick={handleCardClick}
                             />
                         ))}
-                        
-                        <div className="absolute top-10 right-10 w-40 h-40 bg-gradient-to-br from-pink-400/20 to-purple-600/20 rounded-full blur-3xl" />
-                        <div className="absolute bottom-20 left-10 w-48 h-48 bg-gradient-to-br from-blue-400/20 to-cyan-600/20 rounded-full blur-3xl" />
                     </div>
+                </main>
+            </div>
+        );
+    };
 
-                    {/* Instructions */}
-                    <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-center z-20">
-                        <div className="bg-white/90 backdrop-blur-md px-6 py-3 rounded-full shadow-xl">
-                            <p className="text-gray-700 font-medium">✨ Hover and click the bubbles to explore! ✨</p>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const renderOtherPage = () => (
-                <div className="max-w-4xl mx-auto text-center py-20">
-                    <div className="text-8xl mb-8">
-                        {bubbles.find(b => b.id === currentView)?.icon || '📊'}
-                    </div>
-                    <h2 className="text-4xl font-bold mb-6 text-gray-800">
-                        {bubbles.find(b => b.id === currentView)?.label || 'Dashboard'}
-                    </h2>
-                    <p className="text-xl text-gray-600 mb-8">
-                        This section is under development. Click UniSync logo to return home.
-                    </p>
-                    <button
-                        onClick={() => setCurrentView('home')}
-                        className="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-8 py-3 rounded-full font-semibold hover:shadow-lg transition-all"
-                    >
-                        ← Back to Home
-                    </button>
-                </div>
-            );
-
-            return (
-                <div className="min-h-screen bg-gray-50">
-                    {/* Header */}
-                    <header className="bg-white shadow-sm border-b sticky top-0 z-50">
-                        <div className="max-w-7xl mx-auto px-4">
-                            <div className="flex justify-between items-center h-16">
-                                <div 
-                                    className="flex items-center gap-2 cursor-pointer"
-                                    onClick={() => setCurrentView('home')}
-                                >
-                                    <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold">
-                                        U
-                                    </div>
-                                    <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                                        UniSync
-                                    </h1>
-                                </div>
-                                <div className="text-2xl">🔔</div>
-                            </div>
-                        </div>
-                    </header>
-
-                    {/* Main Content */}
-                    <main>
-                        {currentView === 'home' ? renderHomepage() : (
-                            <div className="p-8">
-                                {renderOtherPage()}
-                            </div>
-                        )}
-                    </main>
-                </div>
-            );
-        };
-
-        ReactDOM.render(React.createElement(UniSync), document.getElementById('root'));
+    ReactDOM.render(React.createElement(UniSync), document.getElementById('root'));
     </script>
 </body>
 </html>
