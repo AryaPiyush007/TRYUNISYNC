@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>UniSync — Q&A Forum</title>
+<title>UniSync — Dashboard</title>
 <style>
 :root{
   --bg:#f7fafc;
@@ -28,10 +28,11 @@ body{margin:0;background:linear-gradient(135deg,#eef2ff 0%, #fdf2f8 100%);color:
 .nav-button:hover{background:linear-gradient(90deg,#f8fafc,#f6f5ff);}
 .nav-button.active{background:linear-gradient(90deg,rgba(79,70,229,0.08),rgba(124,58,237,0.06));}
 .btn{padding:9px 14px;border-radius:10px;border:none;cursor:pointer;font-weight:600;}
-.btn.primary{background:linear-gradient(90deg,#f59e0b,#fde047);color:#fff;}
+.btn.primary{background:linear-gradient(90deg,#8b5cf6,#a855f7);color:#fff;}
 .btn.ghost{border:1px solid rgba(15,23,42,0.06);background:transparent;}
 .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:var(--shadow);}
-@media(max-width:900px){.layout{grid-template-columns:1fr;padding:0 12px}.sidebar{position:relative;top:auto}}
+.grid-2{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;}
+@media(max-width:900px){.layout{grid-template-columns:1fr;padding:0 12px}.grid-2{grid-template-columns:1fr}.sidebar{position:relative;top:auto}}
 </style>
 </head>
 <body>
@@ -48,62 +49,68 @@ body{margin:0;background:linear-gradient(135deg,#eef2ff 0%, #fdf2f8 100%);color:
 <aside class="sidebar">
 <div style="font-size:12px;color:#6b7280;margin-bottom:10px">Explore</div>
 <nav>
-<a class="nav-button" href="unisync-complete.html">🏠 Home</a>
+<a class="nav-button" href="index.html">🏠 Home</a>
 <a class="nav-button" href="notes.html">📝 Notes Sharing</a>
 <a class="nav-button" href="marketplace.html">🛒 Marketplace</a>
 <a class="nav-button" href="events.html">📅 Events</a>
 <a class="nav-button" href="groups.html">👥 Study Groups</a>
-<a class="nav-button active" href="forum.html">💬 Q&A Forum</a>
+<a class="nav-button" href="forum.html">💬 Q&A Forum</a>
 <a class="nav-button" href="messages.html">💌 Messages</a>
-<a class="nav-button" href="dashboard.html">📊 Dashboard</a>
+<a class="nav-button active" href="dashboard.html">📊 Dashboard</a>
 </nav>
 <div style="margin-top:14px;border-top:1px solid rgba(15,23,42,0.04);padding-top:12px">
 <div style="font-size:11px;color:#6b7280">Quick actions</div>
 <div style="display:flex;gap:8px;margin-top:8px">
-<button class="btn primary" onclick="window.location='#ask'">Ask Question</button>
-<button class="btn ghost" onclick="window.location='unisync-complete.html'">Back to Home</button>
+<button class="btn primary" onclick="window.location='notes.html#upload'">Upload Note</button>
+<button class="btn ghost" onclick="window.location='events.html#create'">New Event</button>
 </div>
 </div>
 </aside>
 
 <section>
-<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px">
-<div><h2 style="margin:0;font-size:24px">Q&A Forum</h2>
-<div style="font-size:13px;color:#6b7280">Ask questions and get answers from your peers.</div></div>
+<div style="margin-bottom:20px">
+<h2 style="margin:0;font-size:24px">Welcome back, Piyush!</h2>
+<div style="font-size:13px;color:#6b7280">Here's your personal overview and activity.</div>
 </div>
 
-<div class="card" style="margin-bottom:16px;">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<div><div style="font-weight:700">Help with Big O notation for recursive functions</div><div style="font-size:13px;color:#6b7280">Algorithms • Asked by Priya</div></div>
-<div style="text-align:right"><div style="font-size:13px;color:#6b7280">5 replies</div><button class="btn ghost" style="margin-top:8px">View</button></div>
-</div></div>
-
-<div class="card" style="margin-bottom:16px;">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<div><div style="font-weight:700">What is the main difference between TCP and UDP?</div><div style="font-size:13px;color:#6b7280">Computer Networks • Asked by Rahul</div></div>
-<div style="text-align:right"><div style="font-size:13px;color:#6b7280">3 replies</div><button class="btn ghost" style="margin-top:8px">View</button></div>
-</div></div>
-
-<div class="card" style="margin-bottom:16px;">
-<div style="display:flex;justify-content:space-between;align-items:center;">
-<div><div style="font-weight:700">Can someone explain semaphores in OS?</div><div style="font-size:13px;color:#6b7280">Operating Systems • Asked by Anjali</div></div>
-<div style="text-align:right"><div style="font-size:13px;color:#6b7280">8 replies</div><button class="btn ghost" style="margin-top:8px">View</button></div>
-</div></div>
-
-<div id="ask" class="card" style="margin-top:20px">
-<h3 style="margin:0 0 10px 0">Ask a New Question</h3>
-<form onsubmit="event.preventDefault();alert('Question posted successfully (mock)!')">
-<div style="display:flex;flex-direction:column;gap:10px">
-<input required placeholder="Question Title" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<input required placeholder="Course / Topic (e.g., DSA)" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06)" />
-<textarea required placeholder="Describe your question in detail..." rows="4" style="padding:10px;border-radius:10px;border:1px solid rgba(15,23,42,0.06);font-family:inherit"></textarea>
-<div style="text-align:right"><button type="submit" class="btn primary">Post Question</button></div>
+<div class="grid-2">
+<div class="card">
+<h3 style="margin:0 0 10px 0">📅 Upcoming Events</h3>
+<div style="font-size:14px;">
+<div style="margin-bottom:8px"><strong>Hackathon 2025</strong> - 2025-11-10</div>
+<div><strong>Career Fair</strong> - 2025-12-01</div>
 </div>
-</form>
 </div>
 
-<div style="text-align:center;margin-top:20px;color:#6b7280;font-size:13px">Designed to match the UniSync homepage style — consistent layout & gradients.</div>
+<div class="card">
+<h3 style="margin:0 0 10px 0">💌 Recent Messages</h3>
+<div style="font-size:14px;">
+<div style="margin-bottom:8px"><strong>Karan:</strong> Yes, I can sell it for...</div>
+<div><strong>Priya:</strong> Thanks for sharing the...</div>
+</div>
+</div>
+
+<div class="card">
+<h3 style="margin:0 0 10px 0">👥 My Study Groups</h3>
+<div style="font-size:14px;">
+<div style="margin-bottom:8px">DSA Problem Solving</div>
+<div>Web Dev Project Team</div>
+</div>
+</div>
+
+<div class="card">
+<h3 style="margin:0 0 10px 0">📝 My Contributions</h3>
+<div style="font-size:14px;">
+<div style="margin-bottom:8px">You have uploaded <strong>3 notes</strong>.</div>
+<div>You have asked <strong>1 question</strong> in the forum.</div>
+</div>
+</div>
+</div>
+
+
 </section>
 </div>
 </body>
 </html>
+
+
