@@ -18,11 +18,17 @@
       margin: 0;
       padding: 0;
       background-image: url('./NEUMORPHIC_CIRCLES_BACKGROUND.jpg');
-      background-size: cover;         /* Makes the background image fill the screen */
-      background-position: center;    /* Centers the image */
-      background-repeat: no-repeat;   /* Avoids tiling */
-      background-attachment: fixed;   /* Keeps image static while scrolling */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       width: 100%;
+    }
+
+    @keyframes gradientMove {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
     }
 
     /* Custom Gradients */
@@ -34,20 +40,28 @@
     .card-gradient-rose { background: linear-gradient(145deg, #F43F5E 0%, #EC4899 100%); }
     .card-gradient-violet { background: linear-gradient(145deg, #8B5CF6 0%, #A855F7 100%); }
 
-    /* Card Hover Effect */
+    /* === Premium Glassy Look === */
+
+    /* Main glass container */
+
+    /* Feature cards with frosted glass effect */
     .feature-card {
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(18px) saturate(180%);
+      -webkit-backdrop-filter: blur(18px) saturate(180%);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
       transition: all 0.3s ease-in-out;
-      transform: translateY(0);
-      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-                  0 2px 4px -2px rgba(0, 0, 0, 0.1);
     }
 
     .feature-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
-                  0 4px 6px -4px rgba(0, 0, 0, 0.05),
-                  0 0 40px rgba(139, 92, 246, 0.2);
+      transform: translateY(-6px) scale(1.03);
+      background: rgba(255, 255, 255, 0.25);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35), 0 0 25px rgba(140, 82, 255, 0.4);
+      border-color: rgba(255, 255, 255, 0.4);
     }
+
   </style>
 </head>
 
@@ -57,10 +71,10 @@
   <script type="text/babel">
     const { useState } = React;
 
-    const FeatureCard = ({ id, label, icon, gradient, url, onClick }) => (
+    const FeatureCard = ({ id, label, icon, url, onClick }) => (
       <a
         href={url}
-        className={`feature-card block p-6 rounded-2xl text-white cursor-pointer transition-transform duration-300 hover:scale-[1.02] ${gradient}`}
+        className="feature-card block p-6 rounded-2xl text-white cursor-pointer transition-transform duration-300 hover:scale-[1.02]"
         onClick={(e) => {
           e.preventDefault();
           onClick(id, url);
@@ -79,13 +93,13 @@
       const [clickedId, setClickedId] = useState(null);
 
       const features = [
-        { id: 'notes', label: 'Notes Sharing', icon: '📝', gradient: 'card-gradient-blue', url: 'notes.html' },
-        { id: 'groups', label: 'Study Groups', icon: '👥', gradient: 'card-gradient-indigo', url: 'groups.html' },
-        { id: 'events', label: 'University Events', icon: '📅', gradient: 'card-gradient-purple', url: 'events.html' },
-        { id: 'messages', label: 'Messages / Chat', icon: '💌', gradient: 'card-gradient-rose', url: 'messages.html' },
-        { id: 'marketplace', label: 'Marketplace', icon: '🛒', gradient: 'card-gradient-green', url: 'marketplace.html' },
-        { id: 'forum', label: 'Q&A Forum', icon: '💬', gradient: 'card-gradient-orange', url: 'forum.html' },
-        { id: 'dashboard', label: 'Personal Dashboard', icon: '📊', gradient: 'card-gradient-violet', url: 'dashboard.html' }
+        { id: 'notes', label: 'Notes Sharing', icon: '📝', url: 'notes.html' },
+        { id: 'groups', label: 'Study Groups', icon: '👥', url: 'groups.html' },
+        { id: 'events', label: 'University Events', icon: '📅', url: 'events.html' },
+        { id: 'messages', label: 'Messages / Chat', icon: '💌', url: 'messages.html' },
+        { id: 'marketplace', label: 'Marketplace', icon: '🛒', url: 'marketplace.html' },
+        { id: 'forum', label: 'Q&A Forum', icon: '💬', url: 'forum.html' },
+        { id: 'dashboard', label: 'Personal Dashboard', icon: '📊', url: 'dashboard.html' }
       ];
 
       const handleCardClick = (id, url) => {
@@ -98,19 +112,19 @@
       return (
         <div className="min-h-screen bg-black/40 backdrop-blur-sm">
           {/* Header */}
-          <header className="bg-bg-grey-300 shadow-md sticky top-0 z-50">
+          <header className="backdrop-blur-lg bg-gradient-to-r from-gray-900/70 via-gray-800/50 to-gray-900/70 shadow-lg sticky top-0 z-50 border-b border-white/10 bg-[length:200%_200%] animate-[gradientMove_8s_ease_infinite]">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex justify-between items-center h-20">
                 <a href="#" className="flex items-center gap-3">
-                  <div className="w-14 h-14 bg-gradient-to-tr from-indigo-500 via-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-[4px_4px_0_#555555] hover:translate-y-1 transition-transform">
+                  <div className="w-14 h-14 bg-gradient-to-tr from-indigo-500 via-blue-500 to-cyan-400 rounded-2xl flex items-center justify-center text-white font-extrabold text-3xl shadow-[4px_4px_10px_rgba(0,0,0,0.3)] hover:translate-y-1 transition-transform">
                     U
                   </div>
-                  <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                  <h1 className="text-3xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-indigo-400 drop-shadow-[0_0_6px_rgba(138,43,226,0.4)]">
                     UniSync
                   </h1>
                 </a>
                 <div className="flex items-center space-x-4">
-                  <button className="text-gray-600 hover:text-purple-600 transition duration-150 p-2 rounded-full hover:bg-gray-100" aria-label="Notifications">
+                  <button className="text-gray-300 hover:text-purple-400 transition duration-150 p-2 rounded-full hover:bg-gray-700/30" aria-label="Notifications">
                     <span className="text-2xl">🔔</span>
                   </button>
                   <button className="w-10 h-10 rounded-full bg-gray-200 text-gray-700 font-semibold flex items-center justify-center hover:bg-gray-300 transition duration-150" aria-label="User Profile">
@@ -122,14 +136,13 @@
           </header>
 
           {/* Main Content */}
-          <main className="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
-          <h1 className="text-5xl font-extrabold text-white mb-3 drop-shadow-md">
-  Your Synchronized University Experience
-</h1>
-<p className="text-xl text-white mb-10">
-  Hello, Piyush! Choose your adventure and connect with your college community.
-</p>
-
+          <main className="main-container py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
+            <h1 className="text-5xl font-extrabold text-white mb-3 drop-shadow-md">
+              Your Synchronized University Experience
+            </h1>
+            <p className="text-xl text-white mb-10">
+              Hello, Piyush! Choose your adventure and connect with your college community.
+            </p>
 
             {/* Features Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -140,12 +153,12 @@
 
             {/* Embedded Slow Roads */}
             <div className="mt-20 text-center">
-            <h2 className="text-3xl font-bold mb-4 text-white">
-  Take a Break !!! Play Slow Roads 🚗
-</h2>
-<p className="text-white mb-6">
-  Relax and drive through stunning landscapes, right here in your UniSync dashboard.
-</p>
+              <h2 className="text-3xl font-bold mb-4 text-white">
+                Take a Break !!! Play Slow Roads 🚗
+              </h2>
+              <p className="text-white mb-6">
+                Relax and drive through stunning landscapes, right here in your UniSync dashboard.
+              </p>
 
               <div className="w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-300">
                 <iframe
