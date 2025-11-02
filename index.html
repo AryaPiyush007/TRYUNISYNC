@@ -161,11 +161,13 @@
               </p>
 
               <div className="w-full rounded-2xl overflow-hidden shadow-2xl border-4 border-purple-300">
+                
                 <iframe
                   src="https://slowroads.io/"
                   width="100%"
                   height="600"
                   allow="fullscreen"
+                  tabindex="-1"
                   className="w-full"
                 ></iframe>
               </div>
@@ -177,5 +179,14 @@
 
     ReactDOM.render(<UniSync />, document.getElementById("root"));
   </script>
+  <script>
+  // Prevent iframe auto-focus scroll on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      window.scrollTo(0, 0);
+    }, 0); // small delay ensures iframe has loaded
+  });
+</script>
+
 </body>
 </html>
