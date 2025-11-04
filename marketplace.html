@@ -113,5 +113,178 @@ background:linear-gradient(90deg,#2563eb,#7c3aed);}
 
 </section>
 </div>
+<script>
+    // API Configuration
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // Authentication State
+    let currentUser = null;
+    let authToken = localStorage.getItem('token');
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuth();
+      loadMarketplaceItems();
+      setupEventListeners();
+    });
+
+    // Check authentication
+    async function checkAuth() {
+      if (authToken) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            currentUser = data.data.user;
+            updateUIForAuthenticatedUser();
+          } else {
+            logout();
+          }
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          logout();
+        }
+      }
+    }
+
+    // Update UI for authenticated user
+    function updateUIForAuthenticatedUser() {
+      if (currentUser) {
+        const userDisplay = document.querySelector('.header-right div:last-child');
+        if (userDisplay) {
+          userDisplay.textContent = currentUser.username;
+        }
+      }
+    }
+
+    // Load marketplace items
+    async function loadMarketplaceItems() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/marketplace`);
+
+        if (response.ok) {
+          const data = await response.json();
+          displayMarketplaceItems(data.data.marketplace_items);
+        } else {
+          console.error('Failed to load marketplace items');
+        }
+      } catch (error) {
+        console.error('Error loading marketplace items:', error);
+        // Keep demo data if API fails
+      }
+    }
+
+    // Display marketplace items
+    function displayMarketplaceItems(items) {
+      const grid = document.querySelector('.grid-3');
+      if (!grid) return;
+
+      if (items.length === 0) {
+        grid.innerHTML = '<div class="card" style="grid-column: 1 / -1; text-align: center; padding: 40px;">No marketplace items available</div>';
+        return;
+      }
+
+      grid.innerHTML = items.map(item => `
+        <div class="card">
+          ${item.image_urls && item.image_urls.length > 0 ?
+            `<img src="${item.image_urls[0]}" alt="${item.title}" style="width:100%;height:140px;object-fit:cover;border-radius:10px;">` :
+            `<div style="height:140px;background:#f1f5f9;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:40px">📦</div>`
+          }
+          <div style="margin-top:10px;font-weight:700">${item.title}</div>
+          <div style="font-size:13px;color:#6b7280">${item.seller?.username || 'Unknown'} • ${item.category || 'General'}</div>
+          <div style="margin-top:8px;display:flex;justify-content:space-between;align-items:center">
+            <div style="font-weight:700">₹${item.price}</div>
+            <button class="btn ghost" onclick="contactSeller('${item.seller_id}')">Message</button>
+          </div>
+          ${item.condition ? `<div style="font-size:12px;color:#9ca3af;margin-top:4px;">Condition: ${item.condition.replace('_', ' ')}</div>` : ''}
+        </div>
+      `).join('');
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      const postForm = document.querySelector('#post form');
+      if (postForm) {
+        postForm.addEventListener('submit', handlePostItem);
+      }
+    }
+
+    // Handle posting new item
+    async function handlePostItem(e) {
+      e.preventDefault();
+
+      if (!currentUser) {
+        alert('Please login to post items');
+        return;
+      }
+
+      const formData = new FormData();
+      const title = e.target.querySelector('input[placeholder="Item Name"]').value;
+      const price = e.target.querySelector('input[placeholder="Price (₹)"]').value;
+      const file = e.target.querySelector('input[type="file"]').files[0];
+
+      if (!title || !price) {
+        alert('Please fill all required fields');
+        return;
+      }
+
+      formData.append('title', title);
+      formData.append('description', `${title} - Posted on UniSync marketplace`);
+      formData.append('price', price);
+      formData.append('category', 'general');
+      formData.append('condition', 'good');
+
+      if (file) {
+        formData.append('images', file);
+      }
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/marketplace`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          alert('Item posted successfully!');
+          e.target.reset();
+          loadMarketplaceItems(); // Refresh the list
+        } else {
+          const error = await response.json();
+          alert('Failed to post item: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Post error:', error);
+        alert('Failed to post item. Please try again.');
+      }
+    }
+
+    // Contact seller
+    function contactSeller(sellerId) {
+      if (!currentUser) {
+        alert('Please login to contact sellers');
+        return;
+      }
+
+      // For now, just show an alert. In a real app, this would open a chat modal
+      alert('Chat feature coming soon! Seller ID: ' + sellerId);
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      authToken = null;
+      currentUser = null;
+      window.location.reload();
+    }
+
+    window.contactSeller = contactSeller;
+</script>
 </body>
 </html>
