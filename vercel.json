@@ -1,12 +1,13 @@
 {
   "version": 2,
   "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "CLOUDINARY_CLOUD_NAME": "@cloudinary_cloud_name",
-    "CLOUDINARY_API_KEY": "@cloudinary_api_key",
-    "CLOUDINARY_API_SECRET": "@cloudinary_api_secret",
-    "JWT_SECRET": "@jwt_secret",
-    "REDIS_URL": "@redis_url"
+    "MONGODB_URI": "mongodb+srv://unisync25:xzQTAmxsnz4AUrRL@cluster0.fz5cu3s.mongodb.net/?appName=Cluster0",
+    "CLOUDINARY_CLOUD_NAME": "dcdkpjxkr",
+    "CLOUDINARY_API_KEY": "995795126633171",
+    "CLOUDINARY_API_SECRET": "rUUCNMgan9mvscNFcxg1tD9ulx4",
+    "JWT_SECRET": "E5QZ7WfNqW+1nYH2R8vBmcFpT0qZcIhKpLw3zU8dJs6aY9nVr4xOeD7tS2gJh0Qb",
+    "REDIS_URL": "redis://default:AT8eAAIncDI4NGU2MjJhYzdlYTg0ZWQ3OTI0NjFjZTVlNzFkZjcyZnAyMTYxNTg@humorous-snake-16158.upstash.io:6379",
+    "NODE_ENV": "production"
   },
   "functions": {
     "pages/api/**/*.ts": {
