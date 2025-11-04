@@ -1,13 +1,5 @@
 {
   "version": 2,
-  "env": {
-    "MONGODB_URI": "@mongodb_uri",
-    "CLOUDINARY_CLOUD_NAME": "@cloudinary_cloud_name",
-    "CLOUDINARY_API_KEY": "@cloudinary_api_key",
-    "CLOUDINARY_API_SECRET": "@cloudinary_api_secret",
-    "JWT_SECRET": "@jwt_secret",
-    "REDIS_URL": "@redis_url"
-  },
   "functions": {
     "pages/api/**/*.ts": {
       "maxDuration": 30
