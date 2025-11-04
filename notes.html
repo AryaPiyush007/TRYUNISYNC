@@ -217,5 +217,388 @@ html,body{height:100%;margin:0;background:linear-gradient(135deg,#eef2ff 0%, #fd
     </section>
   </div>
 
+<script>
+    // API Configuration
+    const API_BASE_URL = 'http://localhost:3000/api';
+
+    // Authentication State
+    let currentUser = null;
+    let authToken = localStorage.getItem('token');
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', function() {
+      checkAuth();
+      loadUploads();
+      loadStats();
+      setupEventListeners();
+    });
+
+    // Check authentication
+    async function checkAuth() {
+      if (authToken) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/auth/profile`, {
+            headers: {
+              'Authorization': `Bearer ${authToken}`
+            }
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            currentUser = data.data.user;
+            updateUIForAuthenticatedUser();
+          } else {
+            logout();
+          }
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          logout();
+        }
+      }
+    }
+
+    // Update UI for authenticated user
+    function updateUIForAuthenticatedUser() {
+      if (currentUser) {
+        // Update username in header
+        const userDisplay = document.querySelector('.header-right div:last-child');
+        if (userDisplay) {
+          userDisplay.textContent = currentUser.username;
+        }
+
+        // Show upload section for authenticated users
+        const uploadSection = document.getElementById('upload');
+        if (uploadSection) {
+          uploadSection.style.display = 'block';
+        }
+      }
+    }
+
+    // Load uploads from API
+    async function loadUploads() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/uploads`);
+
+        if (response.ok) {
+          const data = await response.json();
+          displayUploads(data.data.uploads);
+          updateLatestNotes(data.data.uploads);
+        } else {
+          console.error('Failed to load uploads');
+        }
+      } catch (error) {
+        console.error('Error loading uploads:', error);
+        // Keep demo data if API fails
+      }
+    }
+
+    // Load statistics
+    async function loadStats() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/uploads`);
+
+        if (response.ok) {
+          const data = await response.json();
+          const uploads = data.data.uploads;
+
+          // Calculate course statistics
+          const courseStats = {};
+          const userStats = {};
+
+          uploads.forEach(upload => {
+            courseStats[upload.course] = (courseStats[upload.course] || 0) + 1;
+
+            if (upload.uploader) {
+              const username = upload.uploader.username;
+              userStats[username] = (userStats[username] || 0) + 1;
+            }
+          });
+
+          updatePopularCourses(courseStats);
+          updateTopContributors(userStats);
+        }
+      } catch (error) {
+        console.error('Error loading stats:', error);
+        // Keep demo data if API fails
+      }
+    }
+
+    // Display uploads in table
+    function displayUploads(uploads) {
+      const tableBody = document.querySelector('tbody');
+      if (!tableBody) return;
+
+      tableBody.innerHTML = '';
+
+      uploads.forEach(upload => {
+        const row = document.createElement('tr');
+        const fileSize = formatFileSize(upload.file_size);
+        const uploaderName = upload.uploader ? upload.uploader.username : 'Unknown';
+
+        row.innerHTML = `
+          <td style="padding:10px 8px">
+            <div style="font-weight:700">${upload.title}</div>
+            ${upload.description ? `<div class="small">${upload.description.substring(0, 100)}...</div>` : ''}
+          </td>
+          <td style="padding:10px 8px">${upload.course}</td>
+          <td style="padding:10px 8px">${uploaderName}</td>
+          <td style="padding:10px 8px">${fileSize}</td>
+          <td style="padding:10px 8px">
+            <button class="btn" onclick="previewUpload('${upload._id}')">Preview</button>
+            <button class="btn primary" onclick="downloadUpload('${upload.file_url}', '${upload.title}')">Download</button>
+          </td>
+        `;
+
+        tableBody.appendChild(row);
+      });
+    }
+
+    // Update latest notes section
+    function updateLatestNotes(uploads) {
+      const latestNotesList = document.querySelector('.card ul');
+      if (!latestNotesList) return;
+
+      // Get latest 3 uploads
+      const latestUploads = uploads.slice(0, 3);
+      latestNotesList.innerHTML = '';
+
+      latestUploads.forEach(upload => {
+        const fileSize = formatFileSize(upload.file_size);
+        const uploaderName = upload.uploader ? upload.uploader.username : 'Unknown';
+
+        const li = document.createElement('li');
+        li.className = 'note-item';
+        li.style.marginBottom = '8px';
+
+        li.innerHTML = `
+          <div>
+            <div style="font-weight:700">${upload.title}</div>
+            <div class="note-meta">${upload.course} • by ${uploaderName}</div>
+          </div>
+          <div style="text-align:right">
+            <div class="small">${fileSize}</div>
+            <div style="margin-top:8px">
+              <button class="btn" onclick="previewUpload('${upload._id}')">Preview</button>
+              <button class="btn primary" onclick="downloadUpload('${upload.file_url}', '${upload.title}')">Download</button>
+            </div>
+          </div>
+        `;
+
+        latestNotesList.appendChild(li);
+      });
+    }
+
+    // Update popular courses
+    function updatePopularCourses(courseStats) {
+      const popularCoursesDiv = document.querySelectorAll('.card')[1];
+      if (!popularCoursesDiv) return;
+
+      const sortedCourses = Object.entries(courseStats)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const coursesHTML = sortedCourses.map(([course, count]) =>
+        `<div style="margin-bottom:8px"><strong>${course}</strong> — ${count} notes</div>`
+      ).join('');
+
+      popularCoursesDiv.innerHTML = `
+        <div style="font-size:18px">📚 Popular Courses</div>
+        <div style="margin-top:12px" class="small">
+          ${coursesHTML}
+        </div>
+      `;
+    }
+
+    // Update top contributors
+    function updateTopContributors(userStats) {
+      const topContributorsDiv = document.querySelectorAll('.card')[2];
+      if (!topContributorsDiv) return;
+
+      const sortedUsers = Object.entries(userStats)
+        .sort((a, b) => b[1] - a[1])
+        .slice(0, 3);
+
+      const contributorsHTML = sortedUsers.map(([user, count]) =>
+        `<div style="margin-bottom:8px"><strong>${user}</strong> — ${count} uploads</div>`
+      ).join('');
+
+      topContributorsDiv.innerHTML = `
+        <div style="font-size:18px">⭐ Top Contributors</div>
+        <div style="margin-top:12px" class="small">
+          ${contributorsHTML}
+        </div>
+      `;
+    }
+
+    // Setup event listeners
+    function setupEventListeners() {
+      // Upload form
+      const uploadForm = document.querySelector('#upload form');
+      if (uploadForm) {
+        uploadForm.addEventListener('submit', handleUpload);
+      }
+
+      // Search functionality
+      const searchInput = document.querySelector('.search input');
+      if (searchInput) {
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+      }
+    }
+
+    // Handle file upload
+    async function handleUpload(e) {
+      e.preventDefault();
+
+      if (!currentUser) {
+        alert('Please login to upload files');
+        return;
+      }
+
+      const formData = new FormData();
+      const title = e.target.querySelector('input[placeholder="Title"]').value;
+      const course = e.target.querySelector('input[placeholder="Course"]').value;
+      const file = e.target.querySelector('input[type="file"]').files[0];
+
+      if (!title || !course || !file) {
+        alert('Please fill all fields and select a file');
+        return;
+      }
+
+      formData.append('title', title);
+      formData.append('course', course);
+      formData.append('file', file);
+      formData.append('visibility', 'public');
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/uploads`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${authToken}`
+          },
+          body: formData
+        });
+
+        if (response.ok) {
+          alert('Upload successful!');
+          e.target.reset();
+          loadUploads(); // Refresh the list
+        } else {
+          const error = await response.json();
+          alert('Upload failed: ' + error.error);
+        }
+      } catch (error) {
+        console.error('Upload error:', error);
+        alert('Upload failed. Please try again.');
+      }
+    }
+
+    // Handle search
+    async function handleSearch(e) {
+      const query = e.target.value.trim();
+
+      if (query.length > 2) {
+        try {
+          const response = await fetch(`${API_BASE_URL}/uploads?search=${encodeURIComponent(query)}`);
+
+          if (response.ok) {
+            const data = await response.json();
+            displayUploads(data.data.uploads);
+          }
+        } catch (error) {
+          console.error('Search error:', error);
+        }
+      } else if (query.length === 0) {
+        loadUploads(); // Load all uploads when search is cleared
+      }
+    }
+
+    // Preview upload
+    async function previewUpload(uploadId) {
+      try {
+        const response = await fetch(`${API_BASE_URL}/uploads/${uploadId}`);
+
+        if (response.ok) {
+          const data = await response.json();
+          const upload = data.data.upload;
+
+          // Create a simple preview modal
+          const modal = document.createElement('div');
+          modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+          `;
+
+          modal.innerHTML = `
+            <div style="background: white; padding: 30px; border-radius: 15px; max-width: 600px; width: 90%;">
+              <h3 style="margin: 0 0 15px 0;">${upload.title}</h3>
+              <p style="margin: 0 0 10px 0; color: #666;">${upload.description || 'No description'}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Course:</strong> ${upload.course}</p>
+              <p style="margin: 0 0 10px 0;"><strong>Size:</strong> ${formatFileSize(upload.file_size)}</p>
+              <p style="margin: 0 0 20px 0;"><strong>Uploaded by:</strong> ${upload.uploader?.username || 'Unknown'}</p>
+              <button onclick="this.parentElement.parentElement.remove()" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
+            </div>
+          `;
+
+          document.body.appendChild(modal);
+          modal.addEventListener('click', (e) => {
+            if (e.target === modal) modal.remove();
+          });
+        }
+      } catch (error) {
+        console.error('Preview error:', error);
+      }
+    }
+
+    // Download file
+    function downloadUpload(fileUrl, title) {
+      const link = document.createElement('a');
+      link.href = fileUrl;
+      link.download = title;
+      link.target = '_blank';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Utility functions
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    function debounce(func, wait) {
+      let timeout;
+      return function executedFunction(...args) {
+        const later = () => {
+          clearTimeout(timeout);
+          func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+      };
+    }
+
+    function logout() {
+      localStorage.removeItem('token');
+      authToken = null;
+      currentUser = null;
+      window.location.reload();
+    }
+
+    // Global functions for onclick handlers
+    window.previewUpload = previewUpload;
+    window.downloadUpload = downloadUpload;
+  </script>
 </body>
 </html>
