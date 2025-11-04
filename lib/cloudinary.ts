@@ -27,7 +27,7 @@ export const getUploadFolder = (type: 'uploads' | 'marketplace' | 'events' = 'up
 export const uploadToCloudinary = async (
   file: Buffer,
   filename: string,
-  folder: string = 'uploads'
+  folder: 'uploads' | 'marketplace' | 'events' = 'uploads'
 ): Promise<{ secure_url: string; public_id: string; resource_type: string }> => {
   try {
     const result = await new Promise((resolve, reject) => {
