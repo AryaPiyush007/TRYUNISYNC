@@ -59,7 +59,8 @@ export function addSecurityHeaders(req: NextApiRequest, res: NextApiResponse, ne
   res.removeHeader('X-Powered-By');
 
   // Add caching headers for static content
-  if (req.url && req.url.includes('/uploads/') || req.url.includes('/images/')) {
+  const url = req.url || '';
+  if (url.includes('/uploads/') || url.includes('/images/')) {
     res.setHeader('Cache-Control', 'public, max-age=31536000'); // 1 year
   }
 
