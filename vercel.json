@@ -1,8 +1,5 @@
 {
   "version": 2,
-  "buildCommand": "npm run build",
-  "outputDirectory": ".next",
-  "installCommand": "npm install",
   "env": {
     "MONGODB_URI": "@mongodb_uri",
     "CLOUDINARY_CLOUD_NAME": "@cloudinary_cloud_name",
@@ -16,12 +13,6 @@
       "maxDuration": 30
     }
   },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "/pages/api/$1.ts"
-    }
-  ],
   "headers": [
     {
       "source": "/api/(.*)",
