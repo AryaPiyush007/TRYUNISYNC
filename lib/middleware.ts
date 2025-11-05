@@ -1,10 +1,7 @@
 // lib/middleware.ts
 import type { NextApiHandler, NextApiRequest, NextApiResponse } from 'next';
 
-/**
- * Wrap a Next.js API handler and log the request once the response ends.
- * Usage: export default withLogger(handler)
- */
+/** Wrap a Next.js API handler and log once the response ends. */
 export function withLogger(handler: NextApiHandler): NextApiHandler {
   return async function logger(req: NextApiRequest, res: NextApiResponse): Promise<void> {
     const start = Date.now();
@@ -23,14 +20,14 @@ export function withLogger(handler: NextApiHandler): NextApiHandler {
       const statusCode = res.statusCode;
       const { method, url } = req;
 
-      // Do your logging here
-      // eslint-disable-next-line no-console
+      // your logging here if you want:
       // console.log(`[API] ${method} ${url} -> ${statusCode} (${duration}ms)`);
 
-      // Normalize overload where encoding may actually be the callback
+      // If 'encoding' is actually the callback, use the (chunk, cb) overload
       if (typeof encoding === 'function') {
-        return originalEnd.call(this, chunk, undefined, encoding);
+        return originalEnd.call(this, chunk, encoding);
       }
+      // Otherwise use the (chunk, encoding, cb) overload
       return originalEnd.call(this, chunk, encoding, cb);
     } as typeof res.end);
 
@@ -38,10 +35,7 @@ export function withLogger(handler: NextApiHandler): NextApiHandler {
   };
 }
 
-/**
- * Optional Express-style middleware variant if you’re composing middlewares.
- * Call: loggerMiddleware(req, res, next)
- */
+/** Express-style middleware variant if you compose middlewares. */
 export function loggerMiddleware(
   req: NextApiRequest,
   res: NextApiResponse,
@@ -58,11 +52,10 @@ export function loggerMiddleware(
   ) {
     const duration = Date.now() - start;
     const statusCode = res.statusCode;
-    // eslint-disable-next-line no-console
     // console.log(`[API] ${req.method} ${req.url} -> ${statusCode} (${duration}ms)`);
 
     if (typeof encoding === 'function') {
-      return originalEnd.call(this, chunk, undefined, encoding);
+      return originalEnd.call(this, chunk, encoding);
     }
     return originalEnd.call(this, chunk, encoding, cb);
   } as typeof res.end);
